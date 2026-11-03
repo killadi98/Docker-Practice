@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marquee – Book movie tickets</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{--velvet:#2a0f1c;--ink:#160a12;--card:#331626;--brass:#e2b25c;--paper:#f3e6cf;--glow:#bfd9ff;--muted:#b8a2ad;--taken:#4a2e3b;--ok:#7fd1a0;
+--serif:"DM Serif Display",Georgia,serif;--sans:"Bricolage Grotesque",system-ui,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:radial-gradient(120% 60% at 50% -10%,#4a1b30 0%,var(--ink) 60%) fixed var(--ink);color:var(--paper);font:400 16px/1.5 var(--sans);min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 20px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.brand{font:400 28px var(--serif);letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.brand i{display:inline-grid;grid-template-columns:repeat(4,6px);gap:3px}
+.brand i b{width:6px;height:6px;border-radius:50%;background:var(--brass);animation:blink 2.4s infinite}
+.brand i b:nth-child(even){animation-delay:1.2s}
+@keyframes blink{50%{opacity:.25}}
+.steps{display:flex;gap:6px;font-size:14px;color:var(--muted)}
+.steps span{padding:6px 12px;border-radius:99px;border:1px solid #ffffff22}
+.steps .on{background:var(--brass);color:var(--ink);border-color:var(--brass);font-weight:600}
+.steps .done{color:var(--paper)}
+h1{font:400 clamp(34px,6vw,60px)/1.05 var(--serif);margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 24px;max-width:52ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.chip{background:transparent;border:1px solid #ffffff30;border-radius:99px;padding:7px 16px;transition:.15s}
+.chip:hover{border-color:var(--brass)}
+.chip[aria-pressed=true],.chip.sel{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:22px}
+.movie{background:none;border:0;padding:0;text-align:left;display:block}
+.poster{aspect-ratio:2/3;border-radius:6px 6px 14px 14px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;box-shadow:0 10px 30px #0006}
+.poster::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,#000a)}
+.poster::after{content:"";position:absolute;width:140%;height:60%;left:-20%;top:-15%;background:var(--shape);opacity:.5;transform:rotate(-12deg)}
+.poster strong{position:relative;z-index:1;font:400 28px/1 var(--serif);color:#fff}
+.poster small{position:relative;z-index:1;color:#ffffffcc;margin-top:6px}
+.movie:hover .poster,.movie:focus-visible .poster{transform:translateY(-6px) rotate(-1deg);box-shadow:0 18px 40px #000a}
+.rate{position:absolute;top:12px;right:12px;z-index:1;background:#000a;border-radius:99px;padding:2px 10px;font-size:13px}
+.meta{margin-top:10px;font-size:14px;color:var(--muted)}
+.back{background:none;border:0;color:var(--brass);padding:0;margin-bottom:16px}
+.book{display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start}
+@media(max-width:860px){.book{grid-template-columns:1fr}}
+.panel{background:var(--card);border-radius:16px;padding:22px;border:1px solid #ffffff14}
+.dates{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.date{min-width:62px;border:1px solid #ffffff30;background:none;border-radius:12px;padding:8px 6px;text-align:center;line-height:1.25}
+.date b{display:block;font-size:20px}
+.date.sel{background:var(--brass);color:var(--ink);border-color:var(--brass)}
+.times{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.time small{display:block;color:inherit;opacity:.7;font-size:12px}
+.screen{height:46px;margin:0 8% 10px;border-radius:50% 50% 0 0/100% 100% 0 0;background:linear-gradient(180deg,#bfd9ff55,transparent);border-top:3px solid var(--glow);box-shadow:0 -14px 40px #bfd9ff44;text-align:center;font-size:12px;color:var(--glow);padding-top:14px;letter-spacing:.1em}
+.seats{overflow-x:auto;padding:10px 0}
+.row{display:flex;justify-content:center;align-items:center;gap:6px;margin-bottom:6px;min-width:max-content}
+.rl{width:18px;color:var(--muted);font-size:13px;text-align:center}
+.seat{width:28px;height:26px;border-radius:7px 7px 4px 4px;border:0;background:var(--paper);opacity:.9;transition:transform .12s,background .12s}
+.seat.prime{background:#e9c98e}.seat.lux{background:var(--glow)}
+.seat:hover:not(:disabled){transform:scale(1.18)}
+.seat.mine{background:var(--ok);transform:scale(1.12);box-shadow:0 0 0 2px #fff6}
+.seat:disabled{background:var(--taken);cursor:not-allowed;opacity:1}
+.gap{width:20px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--muted);margin-top:14px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.sum h3{font:400 24px var(--serif);margin:0 0 4px}
+.sum dl{margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:15px}
+.sum dt{color:var(--muted)}.sum dd{margin:0;text-align:right}
+.total{display:flex;justify-content:space-between;font-size:22px;border-top:1px dashed #ffffff40;padding-top:14px;margin-top:6px}
+.cta{width:100%;margin-top:16px;border:0;border-radius:12px;background:var(--brass);color:var(--ink);font-weight:800;padding:14px;font-size:16px;transition:filter .15s}
+.cta:hover:not(:disabled){filter:brightness(1.1)}
+.cta:disabled{background:#ffffff1a;color:var(--muted);cursor:not-allowed}
+.field{display:block;margin-bottom:14px;font-size:14px;color:var(--muted)}
+.field input{display:block;width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid #ffffff30;background:var(--ink);color:var(--paper);font:inherit}
+.err{color:#ff9d9d;font-size:14px;min-height:20px;margin:0}
+.ticket{max-width:720px;margin:10px auto;display:flex;color:var(--ink);filter:drop-shadow(0 20px 30px #000a);animation:drop .7s cubic-bezier(.2,1.3,.4,1)}
+@keyframes drop{from{transform:translateY(-40px) rotate(-3deg);opacity:0}}
+.t-main{flex:1;background:var(--paper);padding:26px 28px;border-radius:14px 0 0 14px;-webkit-mask:radial-gradient(circle 12px at 100% 50%,#0000 98%,#000) ;mask:radial-gradient(circle 12px at 100% 50%,#0000 98%,#000)}
+.t-main h2{font:400 36px/1 var(--serif);margin:0 0 14px}
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.t-grid small{display:block;color:#6b5a50;font-size:12px}.t-grid b{font-size:17px}
+.t-stub{width:170px;background:var(--brass);padding:22px 16px;border-radius:0 14px 14px 0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;border-left:2px dashed #2a0f1c55;-webkit-mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000);mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000)}
+.bars{display:flex;gap:2px;height:64px;align-items:stretch}.bars i{background:var(--ink);display:block}
+@media(max-width:640px){.ticket{flex-direction:column}.t-main,.t-stub{width:auto;border-radius:14px;-webkit-mask:none;mask:none}.t-stub{border-left:0;border-top:2px dashed #2a0f1c55;gap:12px}}
+.center{text-align:center}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><i aria-hidden="true"><b></b><b></b><b></b><b></b></i>Marquee</div>
+    <nav class="steps" aria-label="Booking progress"><span id="s1">Film</span><span id="s2">Seats</span><span id="s3">Pay</span><span id="s4">Ticket</span></nav>
+  </header>
+  <main id="app"></main>
+</div>
+<script>
+const MOVIES=[
+{id:1,t:"The Last Lighthouse",g:"Thriller",d:118,r:"PG-13",c:"#1b3a5c",s:"radial-gradient(circle,#7fb2e5,transparent 60%)",about:"A keeper on a remote island discovers the lamp has been signalling to something below."},
+{id:2,t:"Saffron Skies",g:"Romance",d:104,r:"PG",c:"#a4452c",s:"radial-gradient(circle,#ffc36b,transparent 60%)",about:"Two rival kite makers fall for each other during one windy festival week."},
+{id:3,t:"Neon Orbit",g:"Sci-Fi",d:136,r:"PG-13",c:"#3b1f78",s:"radial-gradient(circle,#ff5fd2,transparent 60%)",about:"A salvage crew finds a station that has been broadcasting their names for years."},
+{id:4,t:"Grandma Goes Viral",g:"Comedy",d:96,r:"PG",c:"#2f7a56",s:"radial-gradient(circle,#d8f56b,transparent 60%)",about:"A 78-year-old’s cooking video explodes online and the family loses control."},
+{id:5,t:"Paper Wolves",g:"Thriller",d:122,r:"R",c:"#4a3a32",s:"radial-gradient(circle,#e8d6b5,transparent 60%)",about:"A translator is pulled into a case where every witness tells a different story."},
+{id:6,t:"Dust & Thunder",g:"Action",d:129,r:"PG-13",c:"#8a3b12",s:"radial-gradient(circle,#ffb347,transparent 60%)",about:"A mail-truck driver crosses a storm-struck desert with a package someone wants gone."},
+{id:7,t:"Moonlit Recipes",g:"Comedy",d:101,r:"PG",c:"#244a6b",s:"radial-gradient(circle,#b8e0ff,transparent 60%)",about:"A night-shift baker swaps recipes with a mysterious customer through notes."},
+{id:8,t:"Atlas Rising",g:"Sci-Fi",d:141,r:"PG-13",c:"#12514f",s:"radial-gradient(circle,#6bffd8,transparent 60%)",about:"The first colony ship wakes up one century early, and not everyone agrees why."}
+];
+const TIMES=[["11:00","Standard"],["13:45","Standard"],["16:30","Dolby"],["19:15","Dolby"],["22:00","IMAX"]];
+const ROWS="ABCDEFGH".split(""),COLS=12,MAX=6;
+const price=r=>r<3?11:r<6?14:18, tier=r=>r<3?"":r<6?"prime":"lux";
+const S={view:"movies",genre:"All",movie:null,dayIdx:0,time:null,seats:[],name:"",email:"",ref:""};
+const $=s=>document.querySelector(s), app=$("#app");
+const days=[...Array(6)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()+i);return d});
+const hash=str=>{let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const rnd=seed=>()=>(seed=Math.imul(seed^seed>>>15,2246822507)>>>0)/4294967296;
+const fmtDay=d=>d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+function taken(){const r=rnd(hash(S.movie.id+"|"+S.dayIdx+"|"+S.time)),t=new Set();
+  ROWS.forEach((_,ri)=>{for(let c=1;c<=COLS;c++)if(r()<.28)t.add(ri+"-"+c)});return t}
+function steps(){const n={movies:1,book:2,pay:3,ticket:4}[S.view];
+  [1,2,3,4].forEach(i=>{const e=$("#s"+i);e.className=i===n?"on":i<n?"done":""})}
+function render(){steps();({movies,book,pay,ticket})[S.view]();window.scrollTo({top:0})}
+
+function movies(){
+  const gs=["All",...new Set(MOVIES.map(m=>m.g))];
+  app.innerHTML=`<h1>What are we watching tonight?</h1><p class="lead">Pick a film, choose your seats, and your ticket is ready in under a minute.</p>
+  <div class="chips" role="group" aria-label="Filter by genre">${gs.map(g=>`<button class="chip" aria-pressed="${g===S.genre}" data-g="${g}">${g}</button>`).join("")}</div>
+  <div class="grid">${MOVIES.filter(m=>S.genre==="All"||m.g===S.genre).map(m=>`
+   <button class="movie" data-id="${m.id}" aria-label="Book ${m.t}">
+    <div class="poster" style="background:${m.c};--shape:${m.s}"><span class="rate">${m.r}</span><strong>${m.t}</strong></div>
+    <div class="meta">${m.g} · ${Math.floor(m.d/60)}h ${m.d%60}m</div></button>`).join("")}</div>`;
+  app.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{S.genre=b.dataset.g;movies()});
+  app.querySelectorAll(".movie").forEach(b=>b.onclick=()=>{S.movie=MOVIES.find(m=>m.id==b.dataset.id);S.time=null;S.seats=[];S.dayIdx=0;S.view="book";render()});
+}
+
+function book(){
+  const m=S.movie;
+  app.innerHTML=`<button class="back" id="bk">← All films</button>
+  <div class="book"><section>
+    <h1>${m.t}</h1><p class="lead">${m.about}</p>
+    <div class="dates" role="group" aria-label="Date">${days.map((d,i)=>`<button class="date ${i===S.dayIdx?"sel":""}" data-i="${i}">${d.toLocaleDateString("en-US",{weekday:"short"})}<b>${d.getDate()}</b>${d.toLocaleDateString("en-US",{month:"short"})}</button>`).join("")}</div>
+    <div class="times" role="group" aria-label="Showtime">${TIMES.map(([t,f])=>`<button class="chip time ${S.time===t?"sel":""}" data-t="${t}">${t}<small>${f}</small></button>`).join("")}</div>
+    <div id="map">${S.time?"":`<p class="lead center">Choose a showtime to see available seats.</p>`}</div>
+  </section>
+  <aside class="panel sum" id="sum"></aside></div>`;
+  $("#bk").onclick=()=>{S.view="movies";render()};
+  app.querySelectorAll(".date").forEach(b=>b.onclick=()=>{S.dayIdx=+b.dataset.i;S.seats=[];book()});
+  app.querySelectorAll(".time").forEach(b=>b.onclick=()=>{S.time=b.dataset.t;S.seats=[];book()});
+  if(S.time)seatMap();
+  summary();
+}
+
+function seatMap(){
+  const T=taken();
+  $("#map").innerHTML=`<div class="screen">SCREEN</div><div class="seats">${ROWS.map((r,ri)=>`<div class="row"><span class="rl">${r}</span>${[...Array(COLS)].map((_,ci)=>{const c=ci+1,id=ri+"-"+c,mine=S.seats.includes(id);
+    return `${ci===COLS/2?'<span class="gap"></span>':""}<button class="seat ${tier(ri)} ${mine?"mine":""}" data-id="${id}" ${T.has(id)?"disabled":""} aria-label="Seat ${r}${c}, $${price(ri)}" aria-pressed="${mine}"></button>`}).join("")}<span class="rl">${r}</span></div>`).join("")}</div>
+  <div class="legend"><span style="--c:var(--paper)">Standard $11</span><span style="--c:#e9c98e">Prime $14</span><span style="--c:var(--glow)">Recliner $18</span><span style="--c:var(--ok)">Yours</span><span style="--c:var(--taken)">Taken</span></div>`;
+  app.querySelectorAll(".seat").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id,i=S.seats.indexOf(id);
+    if(i>-1)S.seats.splice(i,1);else if(S.seats.length<MAX)S.seats.push(id);else{$("#sum .err").textContent=`You can book up to ${MAX} seats at once.`;return}
+    b.classList.toggle("mine",i<0);b.setAttribute("aria-pressed",i<0);summary()});
+}
+const seatName=id=>{const[r,c]=id.split("-");return ROWS[r]+c};
+const sorted=()=>[...S.seats].sort((a,b)=>a.split("-")[0]-b.split("-")[0]||a.split("-")[1]-b.split("-")[1]);
+const total=()=>S.seats.reduce((s,id)=>s+price(+id.split("-")[0]),0);
+function summary(){
+  const m=S.movie,n=S.seats.length;
+  $("#sum").innerHTML=`<h3>Your booking</h3><div style="color:var(--muted)">${m.t}</div>
+  <dl><dt>Date</dt><dd>${fmtDay(days[S.dayIdx])}</dd><dt>Time</dt><dd>${S.time||"Not chosen"}</dd>
+  <dt>Seats</dt><dd>${n?sorted().map(seatName).join(", "):"None yet"}</dd></dl>
+  <div class="total"><span>Total</span><strong>$${total().toFixed(2)}</strong></div>
+  <p class="err" role="alert"></p>
+  <button class="cta" id="go" ${n&&S.time?"":"disabled"}>${n?`Continue with ${n} seat${n>1?"s":""}`:"Select seats"}</button>`;
+  $("#go").onclick=()=>{S.view="pay";render()};
+}
+
+function pay(){
+  const fee=(S.seats.length*1.5);
+  app.innerHTML=`<button class="back" id="bk">← Change seats</button><div class="book"><section>
+   <h1>Almost there</h1><p class="lead">Enter your details. This demo doesn’t charge anything.</p>
+   <div class="panel"><label class="field">Full name<input id="nm" autocomplete="name" value="${S.name}"></label>
+   <label class="field">Email for your ticket<input id="em" type="email" autocomplete="email" value="${S.email}"></label>
+   <label class="field">Card number<input id="cc" inputmode="numeric" placeholder="4242 4242 4242 4242" maxlength="19"></label>
+   <p class="err" id="er" role="alert"></p></div></section>
+   <aside class="panel sum"><h3>${S.movie.t}</h3><div style="color:var(--muted)">${fmtDay(days[S.dayIdx])} at ${S.time}</div>
+   <dl><dt>Seats</dt><dd>${sorted().map(seatName).join(", ")}</dd><dt>Tickets</dt><dd>$${total().toFixed(2)}</dd><dt>Booking fee</dt><dd>$${fee.toFixed(2)}</dd></dl>
+   <div class="total"><span>Total</span><strong>$${(total()+fee).toFixed(2)}</strong></div>
+   <button class="cta" id="pay">Pay $${(total()+fee).toFixed(2)}</button></aside></div>`;
+  $("#bk").onclick=()=>{S.name=$("#nm").value;S.email=$("#em").value;S.view="book";render()};
+  $("#cc").oninput=e=>e.target.value=e.target.value.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();
+  $("#pay").onclick=()=>{
+    S.name=$("#nm").value.trim();S.email=$("#em").value.trim();
+    const er=$("#er");
+    if(!S.name)return er.textContent="Enter your full name.";
+    if(!/^\S+@\S+\.\S+$/.test(S.email))return er.textContent="Enter a valid email address.";
+    if($("#cc").value.replace(/\s/g,"").length<16)return er.textContent="Enter all 16 digits of your card number.";
+    S.ref="MQ"+hash(S.name+S.seats.join()+Date.now()).toString(36).toUpperCase().slice(0,6);
+    S.view="ticket";render()};
+}
+
+function ticket(){
+  const r=rnd(hash(S.ref));
+  const bars=[...Array(34)].map(()=>`<i style="width:${1+Math.floor(r()*4)}px"></i>`).join("");
+  app.innerHTML=`<div class="center"><h1>You’re booked, ${S.name.split(" ")[0]}.</h1><p class="lead" style="margin-inline:auto">A copy is on its way to ${S.email}. Show this ticket at the door.</p></div>
+  <div class="ticket"><div class="t-main"><h2>${S.movie.t}</h2><div class="t-grid">
+   <div><small>Date</small><b>${fmtDay(days[S.dayIdx])}</b></div><div><small>Time</small><b>${S.time}</b></div><div><small>Hall</small><b>${1+hash(S.movie.t)%5}</b></div>
+   <div><small>Seats</small><b>${sorted().map(seatName).join(", ")}</b></div><div><small>Guest</small><b>${S.name}</b></div><div><small>Paid</small><b>$${(total()+S.seats.length*1.5).toFixed(2)}</b></div></div></div>
+   <div class="t-stub"><div class="bars" aria-hidden="true">${bars}</div><b>${S.ref}</b></div></div>
+  <div class="center" style="margin-top:28px"><button class="chip" id="again">Book another film</button></div>`;
+  $("#again").onclick=()=>{Object.assign(S,{view:"movies",seats:[],time:null,movie:null});render()};
+}
+render();
+</script>
+</body>
+</html>
